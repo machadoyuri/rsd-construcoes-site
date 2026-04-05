@@ -29,7 +29,15 @@ export default function Orcamento() {
   const [errorMessage, setErrorMessage] = useState("");
 
   function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function normalizeWhatsApp(value) {
+    return value.replace(/\D/g, "");
   }
 
   async function handleSubmit(e) {
@@ -40,15 +48,30 @@ export default function Orcamento() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/enviar-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const payload = {
+        ...formData,
+        whatsapp: normalizeWhatsApp(formData.whatsapp),
+      };
 
-      const data = await response.json();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/enviar-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const raw = await response.text();
+      let data = {};
+
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        data = { message: raw || "Resposta inválida do servidor." };
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Erro ao enviar orçamento.");
@@ -221,7 +244,7 @@ export default function Orcamento() {
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSubmit} noValidate>
             <Box
               sx={{
                 display: "grid",
@@ -232,17 +255,70 @@ export default function Orcamento() {
                 gap: 2,
               }}
             >
-              <TextField fullWidth label="Nome" name="nome" value={formData.nome} onChange={handleChange} />
-              <TextField fullWidth label="Sobrenome" name="sobrenome" value={formData.sobrenome} onChange={handleChange} />
-              <TextField fullWidth label="WhatsApp" name="whatsapp" value={formData.whatsapp} onChange={handleChange} />
-              <TextField fullWidth label="E-mail" name="email" type="email" value={formData.email} onChange={handleChange} />
+              <TextField
+                fullWidth
+                required
+                label="Nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+              />
+
+              <TextField
+                fullWidth
+                required
+                label="Sobrenome"
+                name="sobrenome"
+                value={formData.sobrenome}
+                onChange={handleChange}
+              />
+
+              <TextField
+                fullWidth
+                required
+                label="WhatsApp"
+                name="whatsapp"
+                type="tel"
+                placeholder="(51) 99999-9999"
+                value={formData.whatsapp}
+                onChange={handleChange}
+                inputProps={{
+                  inputMode: "numeric",
+                  maxLength: 20,
+                }}
+              />
+
+              <TextField
+                fullWidth
+                required
+                label="E-mail"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
 
               <Box sx={{ gridColumn: { xs: "span 1", md: "span 2" } }}>
-                <TextField fullWidth label="Endereço" name="endereco" value={formData.endereco} onChange={handleChange} />
+                <TextField
+                  fullWidth
+                  required
+                  label="Endereço"
+                  name="endereco"
+                  value={formData.endereco}
+                  onChange={handleChange}
+                />
               </Box>
 
               <Box sx={{ gridColumn: { xs: "span 1", md: "span 2" } }}>
-                <TextField fullWidth select label="Serviço desejado" name="servico" value={formData.servico} onChange={handleChange}>
+                <TextField
+                  fullWidth
+                  required
+                  select
+                  label="Serviço desejado"
+                  name="servico"
+                  value={formData.servico}
+                  onChange={handleChange}
+                >
                   <MenuItem value="">Selecione</MenuItem>
                   <MenuItem value="Casa do zero">Casa do zero</MenuItem>
                   <MenuItem value="Reforma interna">Reforma interna</MenuItem>
@@ -258,7 +334,7 @@ export default function Orcamento() {
                 <TextField
                   fullWidth
                   multiline
-                  minRows={1}
+                  minRows={3}
                   label="Especificações do serviço"
                   name="especificacoes"
                   value={formData.especificacoes}
@@ -287,10 +363,12 @@ export default function Orcamento() {
                   fontWeight: 800,
                   textTransform: "none",
                   fontSize: "1rem",
-                  background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                  background:
+                    "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
                   boxShadow: "0 12px 26px rgba(37,99,235,0.24)",
                   "&:hover": {
-                    background: "linear-gradient(135deg, #2563eb 0%, #1e40af 100%)",
+                    background:
+                      "linear-gradient(135deg, #2563eb 0%, #1e40af 100%)",
                   },
                 }}
               >
