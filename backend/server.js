@@ -1,48 +1,83 @@
-import express from "express";
-import cors from "cors";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+const express = require("express");
+const cors = require("cors");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-dotenv.config();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// ROTA PARA RECEBER O ORÇAMENTO
-app.post("/enviar-orcamento", async (req, res) => {
-  const dados = req.body;
+app.get("/", (req, res) => {
+  res.send("API do orçamento funcionando");
+});
 
-  // CONFIGURA O ENVIO DO EMAIL
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: dados.email,
-    to: "faleconoscorsdconstrucoes@gmail.com",
-    subject: `Novo orçamento solicitado: ${dados.nome} ${dados.sobrenome}`,
-    html: `
-      <h2>Solicitação de Orçamento</h2>
-      <p><b>Nome:</b> ${dados.nome} ${dados.sobrenome}</p>
-      <p><b>WhatsApp:</b> ${dados.whatsapp}</p>
-      <p><b>Email:</b> ${dados.email}</p>
-      <p><b>Serviço:</b> ${dados.servico}</p>
-      <p><b>Endereço:</b> ${dados.endereco}</p>
-      <p><b>Especificações:</b> ${dados.especificacoes}</p>
-    `,
-  };
-
+app.post("/api/orcamento", async (req, res) => {
   try {
-    await transporter.sendMail(mailOptions);
-    return res.status(200).json({ message: "Email enviado com sucesso!" });
+    console.log("BODY RECEBIDO:", req.body);
+
+    if (!req.body) {
+      return res.status(400).json({
+        message: "Body da requisição não foi enviado.",
+      });
+    }
+
+    const {
+      nome,
+      sobrenome,
+      whatsapp,
+      email,
+      endereco,
+      servico,
+      especificacoes,
+    } = req.body;
+
+    if (!nome || !whatsapp || !email || !servico) {
+      return res.status(400).json({
+        message: "Preencha os campos obrigatórios.",
+      });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const htmlMessage = `
+      <h2>Novo pedido de orçamento</h2>
+      <p><strong>Nome:</strong> ${nome} ${sobrenome || ""}</p>
+      <p><strong>WhatsApp:</strong> ${whatsapp}</p>
+      <p><strong>E-mail:</strong> ${email}</p>
+      <p><strong>Endereço:</strong> ${endereco || "-"}</p>
+      <p><strong>Serviço desejado:</strong> ${servico}</p>
+      <p><strong>Especificações:</strong></p>
+      <p>${especificacoes || "-"}</p>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.OWNER_EMAIL,
+      subject: "Novo orçamento solicitado pelo site",
+      html: htmlMessage,
+    });
+
+    res.status(200).json({
+      message: "Orçamento enviado com sucesso.",
+    });
   } catch (error) {
-    console.log("Erro ao enviar email:", error);
-    return res.status(500).json({ error: "Erro ao enviar email." });
+    console.error("Erro ao enviar e-mail:", error);
+    res.status(500).json({
+      message: "Erro interno ao enviar orçamento.",
+      error: error.message,
+    });
   }
 });
 
-app.listen(4000, () => console.log("Backend rodando na porta 4000"));
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
