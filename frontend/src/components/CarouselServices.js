@@ -18,63 +18,127 @@ const services = [
 
 const CarouselServices = () => {
   const settings = {
-    dots: false,
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
+        },
+      },
+    ],
   };
 
   return (
-    <Slider {...settings}>
-      {services.map((service) => (
-        <Box
-          key={service.id}
-          component={Link}
-          to={`/services/${service.id}`}
-          sx={{
-            position: "relative",
-            margin: 1,
-            height: 250,
-            textDecoration: "none",
-            "&:hover .overlay": {
-              opacity: 1,
-            },
-          }}
-        >
+    <Box
+      sx={{
+        width: "100%",
+        ".slick-slide": {
+          padding: { xs: "0 4px", sm: "0 8px" },
+          boxSizing: "border-box",
+        },
+        ".slick-list": {
+          margin: { xs: "0 -4px", sm: "0 -8px" },
+        },
+        ".slick-dots": {
+          bottom: "-30px",
+        },
+      }}
+    >
+      <Slider {...settings}>
+        {services.map((service) => (
           <Box
+            key={service.id}
+            component={Link}
+            to={`/services/${service.id}`}
             sx={{
-              height: "100%",
-              backgroundImage: `url(${service.image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              borderRadius: 2,
-            }}
-          />
-          <Box
-            className="overlay"
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              borderRadius: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: 0,
-              transition: "opacity 0.3s",
+              position: "relative",
+              display: "block",
+              height: { xs: 220, sm: 240, md: 250 },
+              textDecoration: "none",
+              borderRadius: 3,
+              overflow: "hidden",
+              "&:hover .overlay": {
+                opacity: { xs: 0, md: 1 },
+              },
             }}
           >
-            <Typography variant="body1" sx={{ color: "#fff", textAlign: "center", p: 2 }}>
-              Clique para saber mais sobre o serviço
-            </Typography>
+            <Box
+              sx={{
+                height: "100%",
+                backgroundImage: `url(${service.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderRadius: 3,
+              }}
+            />
+
+            <Box
+              className="overlay"
+              sx={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                borderRadius: 3,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: { xs: 1, md: 0 },
+                transition: "opacity 0.3s",
+                p: 2,
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontSize: { xs: "0.95rem", md: "1rem" },
+                }}
+              >
+                Clique para saber mais sobre o serviço
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                p: 2,
+                background:
+                  "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%)",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: { xs: "1rem", md: "1.05rem" },
+                }}
+              >
+                {service.title}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      ))}
-    </Slider>
+        ))}
+      </Slider>
+    </Box>
   );
 };
 
