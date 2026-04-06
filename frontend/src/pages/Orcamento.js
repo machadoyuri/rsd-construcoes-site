@@ -53,16 +53,15 @@ export default function Orcamento() {
         whatsapp: normalizeWhatsApp(formData.whatsapp),
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/enviar-email`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const API_URL = "https://rsd-construcoes-site.onrender.com";
+
+      const response = await fetch(`${API_URL}/enviar-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       const raw = await response.text();
       let data = {};
