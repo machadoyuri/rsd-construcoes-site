@@ -36,54 +36,56 @@ export default function Orcamento() {
     }));
   }
 
+  function normalizeWhatsApp(value) {
+    return value.replace(/\D/g, "");
+  }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
 
- async function handleSubmit(e) {
-  e.preventDefault();
-
-  setLoading(true);
-  setSuccessMessage("");
-  setErrorMessage("");
-
-  try {
-    const payload = {
-      ...formData,
-      whatsapp: formData.whatsapp.replace(/\D/g, ""),
-    };
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/orcamento`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const raw = await response.text();
-    let data = {};
+    setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
 
     try {
-      data = raw ? JSON.parse(raw) : {};
-    } catch {
-      data = { message: raw || "Resposta inválida do servidor." };
-    }
+      const payload = {
+        ...formData,
+        whatsapp: normalizeWhatsApp(formData.whatsapp),
+      };
 
-    if (!response.ok) {
-      throw new Error(data.message || "Erro ao enviar orçamento.");
-    }
+      const response = await fetch(
+        "https://rsd-construcoes-site.onrender.com/api/orcamento",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
-    setSuccessMessage(data.message || "Orçamento enviado com sucesso.");
-    setFormData(initialState);
-  } catch (error) {
-    console.error(error);
-    setErrorMessage(error.message || "Erro ao enviar orçamento.");
-  } finally {
-    setLoading(false);
+      const raw = await response.text();
+      let data = {};
+
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        data = { message: raw || "Resposta inválida do servidor." };
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao enviar orçamento.");
+      }
+
+      setSuccessMessage(data.message || "Orçamento enviado com sucesso.");
+      setFormData(initialState);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message || "Erro ao enviar orçamento.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <Box
