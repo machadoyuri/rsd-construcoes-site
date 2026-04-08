@@ -57,12 +57,12 @@ app.post("/api/orcamento", async (req, res) => {
       <p>${especificacoes || "-"}</p>
     `;
 
-    // await transporter.sendMail({
-    //   from: process.env.EMAIL_USER,
-    //   to: process.env.OWNER_EMAIL,
-    //   subject: "Novo orçamento solicitado pelo site",
-    //   html: htmlMessage,
-    // });
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.OWNER_EMAIL,
+      subject: "Novo orçamento solicitado pelo site",
+      html: htmlMessage,
+    });
 
     res.status(200).json({
       message: "Orçamento enviado com sucesso.",
