@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -165,6 +165,20 @@ const services = [
   },
 ];
 
+function useWindowWidth() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  return width;
+}
+
 function NextArrow(props) {
   const { onClick } = props;
   return (
@@ -233,6 +247,13 @@ function PrevArrow(props) {
 
 const Services = () => {
   const [selectedService, setSelectedService] = useState(null);
+  const windowWidth = useWindowWidth();
+
+  const slidesToShow =
+    windowWidth < 600 ? 1 :
+    windowWidth < 960 ? 2 : 3;
+
+  const showArrows = windowWidth >= 900;
 
   const goToOrcamento = () => {
     setSelectedService(null);
@@ -252,23 +273,17 @@ const Services = () => {
   };
 
   const settings = {
-    slidesToShow: 3,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    dots: true,
+    infinite: true,
+    speed: 700,
+    slidesToShow: slidesToShow,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4500,
+    pauseOnHover: true,
+    arrows: showArrows,
+    nextArrow: showArrows ? <NextArrow /> : null,
+    prevArrow: showArrows ? <PrevArrow /> : null,
   };
 
   if (selectedService) {
@@ -390,12 +405,7 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
-                    <Stack
-                      direction="row"
-                      spacing={1.2}
-                      alignItems="center"
-                      mb={2}
-                    >
+                    <Stack direction="row" spacing={1.2} alignItems="center" mb={2}>
                       <DesignServicesIcon sx={{ color: "#2563eb" }} />
                       <Typography
                         sx={{
@@ -461,12 +471,7 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
-                    <Stack
-                      direction="row"
-                      spacing={1.2}
-                      alignItems="center"
-                      mb={2.3}
-                    >
+                    <Stack direction="row" spacing={1.2} alignItems="center" mb={2.3}>
                       <ConstructionIcon sx={{ color: "#2563eb" }} />
                       <Typography
                         sx={{
@@ -527,12 +532,7 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2.2, sm: 3, md: 4 } }}>
-                    <Stack
-                      direction="row"
-                      spacing={1.2}
-                      alignItems="center"
-                      mb={1.5}
-                    >
+                    <Stack direction="row" spacing={1.2} alignItems="center" mb={1.5}>
                       <WorkspacePremiumIcon sx={{ color: "#93c5fd" }} />
                       <Typography
                         sx={{
@@ -552,8 +552,8 @@ const Services = () => {
                         fontSize: { xs: "0.94rem", md: "1rem" },
                       }}
                     >
-                      Fale com nossa equipe e receba um atendimento
-                      personalizado para o seu projeto, reforma ou construção.
+                      Fale com nossa equipe e receba um atendimento personalizado
+                      para o seu projeto, reforma ou construção.
                     </Typography>
 
                     <Button
