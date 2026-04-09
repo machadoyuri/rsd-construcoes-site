@@ -251,6 +251,7 @@ const Services = () => {
     }, 120);
   };
 
+  
   const settings = {
     slidesToShow: 3,
     responsive: [
