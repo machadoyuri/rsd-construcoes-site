@@ -251,7 +251,6 @@ const Services = () => {
     }, 120);
   };
 
-  
   const settings = {
     slidesToShow: 3,
     responsive: [
@@ -268,8 +267,10 @@ const Services = () => {
         },
       },
     ],
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
   };
-  
+
   if (selectedService) {
     return (
       <Box
