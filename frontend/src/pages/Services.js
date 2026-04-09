@@ -252,44 +252,23 @@ const Services = () => {
   };
 
   const settings = {
-    dots: true,
-    infinite: true,
-    speed: 700,
     slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4500,
-    pauseOnHover: true,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
     responsive: [
       {
-        breakpoint: 1280,
+        breakpoint: 1024,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          arrows: false,
         },
       },
       {
         breakpoint: 600,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1,
-          arrows: false,
         },
       },
     ],
   };
-
+  
   if (selectedService) {
     return (
       <Box
@@ -409,7 +388,12 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
-                    <Stack direction="row" spacing={1.2} alignItems="center" mb={2}>
+                    <Stack
+                      direction="row"
+                      spacing={1.2}
+                      alignItems="center"
+                      mb={2}
+                    >
                       <DesignServicesIcon sx={{ color: "#2563eb" }} />
                       <Typography
                         sx={{
@@ -475,7 +459,12 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
-                    <Stack direction="row" spacing={1.2} alignItems="center" mb={2.3}>
+                    <Stack
+                      direction="row"
+                      spacing={1.2}
+                      alignItems="center"
+                      mb={2.3}
+                    >
                       <ConstructionIcon sx={{ color: "#2563eb" }} />
                       <Typography
                         sx={{
@@ -536,7 +525,12 @@ const Services = () => {
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2.2, sm: 3, md: 4 } }}>
-                    <Stack direction="row" spacing={1.2} alignItems="center" mb={1.5}>
+                    <Stack
+                      direction="row"
+                      spacing={1.2}
+                      alignItems="center"
+                      mb={1.5}
+                    >
                       <WorkspacePremiumIcon sx={{ color: "#93c5fd" }} />
                       <Typography
                         sx={{
@@ -556,8 +550,8 @@ const Services = () => {
                         fontSize: { xs: "0.94rem", md: "1rem" },
                       }}
                     >
-                      Fale com nossa equipe e receba um atendimento personalizado
-                      para o seu projeto, reforma ou construção.
+                      Fale com nossa equipe e receba um atendimento
+                      personalizado para o seu projeto, reforma ou construção.
                     </Typography>
 
                     <Button
